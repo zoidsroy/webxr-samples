@@ -326,6 +326,7 @@
         }, 500);
       }
       function infoWindow() {
+        shouldAddObject = false;
         // 檢查是否已存在說明視窗，如果存在則先移除
         const existingInfoDialog = document.getElementById("infoDialog");
         if (existingInfoDialog) {
@@ -373,6 +374,9 @@
         // 將說明視窗加到 overlay 元素中
         const overlay = document.getElementById("overlay");
         overlay.appendChild(infoDialog);
+         setTimeout(() => {
+          shouldAddObject = true;
+        }, 500);
       }
 
       // Start the XR application.
