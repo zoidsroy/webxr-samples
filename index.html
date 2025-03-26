@@ -1,13 +1,16 @@
 <html>
   <head>
-    <meta charset='utf-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
-    <meta name='mobile-web-app-capable' content='yes'>
-    <meta name='apple-mobile-web-app-capable' content='yes'>
-    <link rel='icon' type='image/png' sizes='32x32' href='favicon-32x32.png'>
-    <link rel='icon' type='image/png' sizes='96x96' href='favicon-96x96.png'>
-    <link rel='stylesheet' href='css/common.css'>
-    <title>Hit Test with Anchors and DOM Overlay</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+    <link rel="stylesheet" href="css/common.css" />
+    <title>Fungs Design AR</title>
     <style>
       #overlay {
         position: absolute;
@@ -31,13 +34,13 @@
         cursor: pointer;
         pointer-events: auto; /* Ensure the button is interactive */
       }
-      
+
       header {
         position: absolute;
-        bottom:50% ;
+        bottom: 50%;
         left: 50%;
         transform: translateX(-50%);
-/*         padding: 10px 20px; */
+        /*         padding: 10px 20px; */
         background-color: #007bff;
         color: white;
         border: none;
@@ -48,12 +51,18 @@
     </style>
   </head>
   <body>
-    <header>
-    </header>
-    
+    <header></header>
+
     <div id="overlay">
-      <button id="resetButton" style="background: none; border: none; padding: 0; cursor: pointer;">
-        <img src="media/textures/phone_AR_C_TW_Recenter.png" alt="Reset Anchors" style="width: 50px; height: 50px;">
+      <button
+        id="resetButton"
+        style="background: none; border: none; padding: 0; cursor: pointer"
+      >
+        <img
+          src="media/textures/phone_AR_C_TW_Recenter.png"
+          alt="Reset Anchors"
+          style="width: 50px; height: 50px"
+        />
       </button>
     </div>
 
@@ -64,14 +73,17 @@
     </div> -->
 
     <script type="module">
-      import {WebXRButton} from './js/util/webxr-button.js';
-      import {Scene} from './js/render/scenes/scene.js';
-      import {Renderer, createWebGLContext} from './js/render/core/renderer.js';
-      import {Node} from './js/render/core/node.js';
-      import {Gltf2Node} from './js/render/nodes/gltf2.js';
-      import {DropShadowNode} from './js/render/nodes/drop-shadow.js';
-      import {vec3} from './js/render/math/gl-matrix.js';
-      import {Ray} from './js/render/math/ray.js';
+      import { WebXRButton } from "./js/util/webxr-button.js";
+      import { Scene } from "./js/render/scenes/scene.js";
+      import {
+        Renderer,
+        createWebGLContext,
+      } from "./js/render/core/renderer.js";
+      import { Node } from "./js/render/core/node.js";
+      import { Gltf2Node } from "./js/render/nodes/gltf2.js";
+      import { DropShadowNode } from "./js/render/nodes/drop-shadow.js";
+      import { vec3 } from "./js/render/math/gl-matrix.js";
+      import { Ray } from "./js/render/math/ray.js";
 
       // XR globals.
       let xrButton = null;
@@ -90,10 +102,13 @@
       arObject.visible = false;
       scene.addNode(arObject);
 
-      let flower = new Gltf2Node({url: 'media/gltf/powerdrill/Power Drill.gltf'});
+      let flower = new Gltf2Node({
+        url: "media/gltf/powerdrill/Power Drill.gltf",
+      });
+      flower.scale = [0.001, 0.001, 0.001];
       arObject.addNode(flower);
 
-      let reticle = new Gltf2Node({url: 'media/gltf/reticle/reticle.gltf'});
+      let reticle = new Gltf2Node({ url: "media/gltf/reticle/reticle.gltf" });
       reticle.visible = false;
       scene.addNode(reticle);
       let reticleHitTestResult = null;
@@ -103,7 +118,6 @@
       let shadow = new DropShadowNode();
       vec3.set(shadow.scale, 0.15, 0.15, 0.15);
       arObject.addNode(shadow);
-      
 
       const MAX_FLOWERS = 30;
       let flowers = [];
@@ -112,7 +126,7 @@
       scene.clear = false;
 
       const anchoredObjects = [];
-      
+
       function initXR() {
         xrButton = new WebXRButton({
           onRequestSession: onRequestSession,
@@ -121,37 +135,43 @@
           textXRNotFoundTitle: "AR NOT FOUND",
           textExitXRTitle: "EXIT  AR",
         });
-        document.querySelector('header').appendChild(xrButton.domElement);
+        document.querySelector("header").appendChild(xrButton.domElement);
 
         if (navigator.xr) {
-          navigator.xr.isSessionSupported('immersive-ar', { requiredFeatures: ['dom-overlay'] })
+          navigator.xr
+            .isSessionSupported("immersive-ar", {
+              requiredFeatures: ["dom-overlay"],
+            })
             .then((supported) => {
               xrButton.enabled = supported;
             });
         }
 
-        document.getElementById('resetButton').addEventListener('click', resetAnchors);
+        document
+          .getElementById("resetButton")
+          .addEventListener("click", resetAnchors);
       }
 
       function onRequestSession() {
-        return navigator.xr.requestSession('immersive-ar', {
-          requiredFeatures: ['local', 'hit-test', 'anchors', 'dom-overlay'],
-          domOverlay: { root: document.getElementById('overlay') }
-        })
-        .then((session) => {
-          xrSession = session;
-          xrButton.setSession(session);
-          onSessionStarted(session);
-        });
+        return navigator.xr
+          .requestSession("immersive-ar", {
+            requiredFeatures: ["local", "hit-test", "anchors", "dom-overlay"],
+            domOverlay: { root: document.getElementById("overlay") },
+          })
+          .then((session) => {
+            xrSession = session;
+            xrButton.setSession(session);
+            onSessionStarted(session);
+          });
       }
 
-     function onSessionStarted(session) {
-        session.addEventListener('end', onSessionEnded);
-        session.addEventListener('select', onSelect);
+      function onSessionStarted(session) {
+        session.addEventListener("end", onSessionEnded);
+        session.addEventListener("select", onSelect);
 
         if (!gl) {
           gl = createWebGLContext({
-            xrCompatible: true
+            xrCompatible: true,
           });
 
           renderer = new Renderer(gl);
@@ -161,14 +181,16 @@
 
         session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
 
-        session.requestReferenceSpace('viewer').then((refSpace) => {
+        session.requestReferenceSpace("viewer").then((refSpace) => {
           xrViewerSpace = refSpace;
-          session.requestHitTestSource({ space: xrViewerSpace }).then((hitTestSource) => {
-            xrHitTestSource = hitTestSource;
-          });
+          session
+            .requestHitTestSource({ space: xrViewerSpace })
+            .then((hitTestSource) => {
+              xrHitTestSource = hitTestSource;
+            });
         });
 
-        session.requestReferenceSpace('local').then((refSpace) => {
+        session.requestReferenceSpace("local").then((refSpace) => {
           xrRefSpace = refSpace;
 
           session.requestAnimationFrame(onXRFrame);
@@ -176,7 +198,7 @@
       }
 
       function onEndSession(session) {
-        anchoredObjects.forEach(obj => obj.anchor.delete());
+        anchoredObjects.forEach((obj) => obj.anchor.delete());
         anchoredObjects.length = 0;
         if (xrHitTestSource) {
           xrHitTestSource.cancel();
@@ -193,11 +215,13 @@
       const MAX_ANCHORED_OBJECTS = 30;
 
       function addAnchoredObjectsToScene(anchor) {
-        let flower = new Gltf2Node({url: 'media/gltf/powerdrill/Power Drill.gltf'});
+        let flower = new Gltf2Node({
+          url: "media/gltf/powerdrill/Power Drill.gltf",
+        });
         scene.addNode(flower);
         anchoredObjects.push({
           anchoredObject: flower,
-          anchor: anchor
+          anchor: anchor,
         });
 
         if (anchoredObjects.length > MAX_ANCHORED_OBJECTS) {
@@ -209,15 +233,18 @@
 
       function onSelect(event) {
         if (reticle.visible) {
-          reticleHitTestResult.createAnchor().then((anchor) => {
-            addAnchoredObjectsToScene(anchor);
-          }, (error) => {
-            console.error("Could not create anchor: " + error);
-          });
+          reticleHitTestResult.createAnchor().then(
+            (anchor) => {
+              addAnchoredObjectsToScene(anchor);
+            },
+            (error) => {
+              console.error("Could not create anchor: " + error);
+            }
+          );
         }
       }
-      
-         function onXRFrame(t, frame) {
+
+      function onXRFrame(t, frame) {
         if (!xrSession) {
           return;
         }
@@ -237,7 +264,7 @@
           }
         }
 
-        for (const {anchoredObject, anchor} of anchoredObjects) {
+        for (const { anchoredObject, anchor } of anchoredObjects) {
           if (!frame.trackedAnchors.has(anchor)) {
             continue;
           }
@@ -256,12 +283,12 @@
 
       function resetAnchors() {
         // anchoredObjects.forEach(obj => obj.anchor.delete());
-        anchoredObjects.forEach(obj => {
+        anchoredObjects.forEach((obj) => {
           scene.removeNode(obj.anchoredObject); // Remove the node from the scene
           obj.anchor.delete(); // Delete the XRAnchor
         });
         anchoredObjects.length = 0;
-        console.log('Anchors reset.');
+        console.log("remove ArObject");
       }
 
       // Start the XR application.
