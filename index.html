@@ -153,6 +153,9 @@
 
       const anchoredObjects = [];
 
+      //禁用AddAnchor功能
+      let shouldAddObject = true;
+
       function initXR() {
         xrButton = new WebXRButton({
           onRequestSession: onRequestSession,
@@ -261,7 +264,7 @@
       }
 
       function onSelect(event) {
-        if (reticle.visible) {
+        if (reticle.visible && shouldAddObject) {
           reticleHitTestResult.createAnchor().then(
             (anchor) => {
               addAnchoredObjectsToScene(anchor);
@@ -311,13 +314,16 @@
       }
 
       function resetAnchors() {
-        // anchoredObjects.forEach(obj => obj.anchor.delete());
+        shouldAddObject = false;
         anchoredObjects.forEach((obj) => {
-          scene.removeNode(obj.anchoredObject); // Remove the node from the scene
-          obj.anchor.delete(); // Delete the XRAnchor
+          scene.removeNode(obj.anchoredObject);
+          obj.anchor.delete();
         });
         anchoredObjects.length = 0;
         console.log("remove ArObject");
+        setTimeout(() => {
+          shouldAddObject = true;
+        }, 500);
       }
       function infoWindow() {
         // 檢查是否已存在說明視窗，如果存在則先移除
